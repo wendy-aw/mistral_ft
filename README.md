@@ -106,12 +106,9 @@ python eval.py -r results/batchinf_results.jsonl -m ministral-8b-latest -f "epoc
 - Appends results to `metrics.csv` for tracking experiments
 - Identifies weak classes (F1 < 0.5) for further analysis
 
+### Results Visualization
 
+Use the `viz_results.ipynb` notebook to visualize and compare model performance across different experiments.
 
+**Usage**: Open `viz_results.ipynb` in Jupyter and run all cells after populating `metrics.csv` with evaluation results.
 
-
-## Data Format
-
-Input data should be in JSONL format with fields:
-- `patent_text`: Full patent application text
-- `cpc_class_ids`: Array of relevant CPC class codes

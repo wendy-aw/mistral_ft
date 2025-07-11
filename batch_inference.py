@@ -1,6 +1,7 @@
 import os
 import time
 import argparse
+from typing import List, Dict, Any, Tuple
 from mistralai import Mistral
 from tqdm import tqdm
 import json
@@ -8,7 +9,7 @@ import json
 client = Mistral(api_key=os.environ["MISTRAL"])
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """Parse and return command line arguments."""
     parser = argparse.ArgumentParser(description="Run batch inference")
     parser.add_argument(
@@ -36,7 +37,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def validate_arguments(args):
+def validate_arguments(args: argparse.Namespace) -> None:
     """Validate command line arguments."""
     if not args.model:
         raise ValueError("Model name is required")
@@ -54,7 +55,7 @@ def validate_arguments(args):
         _validate_processed_input_file(args.processed_input_file)
 
 
-def _validate_raw_input_file(file_path):
+def _validate_raw_input_file(file_path: str) -> None:
     """Validate raw input file format."""
     if not os.path.exists(file_path):
         raise ValueError("Raw input file does not exist")
@@ -66,7 +67,7 @@ def _validate_raw_input_file(file_path):
                 raise ValueError("Raw input file must contain field: patent_desc_trunc")
 
 
-def _validate_processed_input_file(file_path):
+def _validate_processed_input_file(file_path: str) -> None:
     """Validate processed input file format."""
     if not os.path.exists(file_path):
         raise ValueError("Processed input file does not exist")
@@ -78,7 +79,7 @@ def _validate_processed_input_file(file_path):
                 raise ValueError("Processed input file must contain fields: custom_id, body")
 
 
-def set_default_prompts(args):
+def set_default_prompts(args: argparse.Namespace) -> None:
     """Set default prompt files if not provided."""
     if not args.sys_prompt:
         args.sys_prompt = "prompts/sys_prompt.md"
@@ -89,7 +90,7 @@ def set_default_prompts(args):
         print(f"Using default user prompt: {args.user_prompt}")
 
 
-def load_prompts(sys_prompt_path, user_prompt_path):
+def load_prompts(sys_prompt_path: str, user_prompt_path: str) -> Tuple[str, str]:
     """Load system and user prompts from files."""
     with open(sys_prompt_path, "r") as f:
         sys_prompt = f.read()
@@ -100,19 +101,19 @@ def load_prompts(sys_prompt_path, user_prompt_path):
     return sys_prompt, user_prompt
 
 
-def process_raw_input(raw_input_file, sys_prompt, user_prompt):
+def process_raw_input(raw_input_file: str, sys_prompt: str, user_prompt: str) -> str:
     """Process raw input file into batch inference format."""
     inference_file_name = f"data/batchinf_{raw_input_file.split('/')[-1].split('.')[0]}.jsonl"
     
     # Load raw data
-    test_lines = []
+    test_lines: List[Dict[str, Any]] = []
     with open(raw_input_file, "r") as f:
         for line in f:
             test_lines.append(json.loads(line))
     
     # Create batch requests
-    batch_req = []
-    total_test_lines = len(test_lines)
+    batch_req: List[Dict[str, Any]] = []
+    total_test_lines: int = len(test_lines)
     
     for i, row in tqdm(enumerate(test_lines), total=total_test_lines, desc="Preparing batch inference data"):
         patent_description = row["patent_desc_trunc"]
@@ -145,7 +146,7 @@ def process_raw_input(raw_input_file, sys_prompt, user_prompt):
     return inference_file_name
 
 
-def upload_and_run_batch_job(inference_file_name, model):
+def upload_and_run_batch_job(inference_file_name: str, model: str):
     """Upload input file and create batch job."""
     # Upload input file
     batch_data = client.files.upload(
@@ -178,7 +179,7 @@ def wait_for_batch_completion(batch_job):
     return batch_job
 
 
-def download_results(batch_job, results_path):
+def download_results(batch_job, results_path: str) -> None:
     """Download and save batch job results."""
     output_file_id = batch_job.output_file
     

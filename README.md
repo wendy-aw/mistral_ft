@@ -56,6 +56,7 @@ The `patent_classifier_ui.py` provides a user-friendly Streamlit interface for c
 # Run the UI
 streamlit run patent_classifier_ui.py
 ```
+![Patent Classification UI](ui_screenshot.jpg)
 
 ## Data Preprocessing
 

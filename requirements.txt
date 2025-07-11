@@ -1,0 +1,10 @@
+aiofiles
+httpx
+tqdm
+pandas
+numpy
+duckdb
+iterative-stratification
+scikit-learn
+mistralai
+mistral-common

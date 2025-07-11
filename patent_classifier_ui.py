@@ -1,7 +1,10 @@
 import streamlit as st
 import json
 import os
+import re
 from mistralai import Mistral
+from mistral_common.protocol.instruct.request import ChatCompletionRequest
+from mistral_common.tokens.tokenizers.mistral import MistralTokenizer
 from typing import List, Dict, Any
 
 # CPC class descriptions for display
@@ -56,6 +59,62 @@ CPC_DESCRIPTIONS = {
     "Y10": "Technical subjects covered by former USPC"
 }
 
+def count_tokens(prompt: str) -> int:
+    """Count tokens in a prompt using Mistral tokenizer."""
+    try:
+        tokenizer = MistralTokenizer.v3(is_tekken=True)
+        model_name = "ministral-8b-2410"
+        tokenizer = MistralTokenizer.from_model(model_name)
+
+        # Tokenize a list of messages
+        tokenized = tokenizer.encode_chat_completion(
+            ChatCompletionRequest(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+                model=model_name,
+            )
+        )
+        tokens = tokenized.tokens
+        return len(tokens)
+    except Exception:
+        # Fallback: rough estimate of tokens
+        return len(prompt.split()) * 1.3
+
+def remove_tables(text: str) -> str:
+    """Remove tables from patent description."""
+    # Matches 'TABLE' (all caps), followed by any characters (non-greedy), up to a double newline or end of string.
+    pattern = re.compile(r"TABLE[\s\S]+?(?=(\n\n|$))")
+    return re.sub(pattern, "", text)
+
+def process_description(desc: str) -> str:
+    """Process patent description with truncation and cleaning."""
+    words = desc.split(" ")
+    if len(words) < 5000:
+        return desc
+
+    # Truncate to 5000 words and add ellipsis
+    truncated_words = words[:5000]
+    desc = " ".join(truncated_words) + " ..."
+
+    # Check token count
+    token_count = count_tokens(desc)
+    if token_count <= 10000:
+        return desc
+
+    # Remove tables if still too long
+    desc_no_tables = remove_tables(desc)
+    if count_tokens(desc_no_tables) <= 10000:
+        return desc_no_tables
+
+    # Remove words longer than 50 characters as a last resort
+    filtered_words = [word for word in truncated_words if len(word) <= 50]
+    desc = " ".join(filtered_words)
+    return desc
+
 def initialize_mistral_client():
     """Initialize Mistral client with API key."""
     api_key = os.environ.get("MISTRAL")
@@ -77,12 +136,15 @@ def classify_patent_text(client: Mistral, model_name: str, patent_text: str) -> 
         List of predicted CPC class IDs
     """
     try:
+        # Process patent text first
+        processed_text = process_description(patent_text)
+        
         # Check if it's a fine-tuned model
         if model_name.startswith("ft:"):
             # Use classifier API for fine-tuned models
             classifier_response = client.classifiers.classify(
                 model=model_name,
-                inputs=[patent_text],
+                inputs=[processed_text],
             )
             
             # Extract class IDs from classifier response
@@ -106,7 +168,7 @@ def classify_patent_text(client: Mistral, model_name: str, patent_text: str) -> 
                     {"role": "system", "content": sys_prompt},
                     {
                         "role": "user",
-                        "content": user_prompt.format(patent_description=patent_text),
+                        "content": user_prompt.format(patent_description=processed_text),
                     },
                 ],
                 temperature=0,

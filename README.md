@@ -49,7 +49,29 @@ export WANDB_API_KEY="your-api-key-here"
 
 ## Usage
 
-### Batch Inference on Base Models
+### Data Preprocessing
+
+The `preprocess_data.ipynb` notebook contains the complete data pipeline for preparing patent classification datasets. It shows how raw patent data was fetched, cleaned, and preprocessed into training-ready formats.
+
+**Key Steps**:
+- Data fetching from patent databases
+- CPC label extraction and sampling patents from top 48 CPC classes
+- Patent text truncation to fit into model input length
+- Dataset splitting (train/validation/test)
+- Format conversion for fine-tuning
+
+### Fine-tuning
+
+Use `finetuning.ipynb` to fine-tune Mistral models via the Mistral fine-tuning API to improve classification performance beyond prompt-based approaches.
+
+**Key Features**:
+- Model configuration and hyperparameter setup
+- Upload training and validation data to Mistral API
+- Kick-start fine-tuning process with loss monitoring
+- Integration with Weights & Biases for experiment tracking
+- Inference with fine-tuned model
+
+### Batch Inference with Base Models
 
 The `batch_inference.py` script runs inference on datasets using Mistral's batch API for **base models only** (not fine-tuned models). It enables efficient baseline testing of base models and processes multiple samples simultaneously instead of sample-by-sample classification. It can process either raw patent data or pre-processed batch inference files.
 
@@ -111,4 +133,5 @@ python eval.py -r results/batchinf_results.jsonl -m ministral-8b-latest -f "epoc
 Use the `viz_results.ipynb` notebook to visualize and compare model performance across different experiments.
 
 **Usage**: Open `viz_results.ipynb` in Jupyter and run all cells after populating `metrics.csv` with evaluation results.
+
 

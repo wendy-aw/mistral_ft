@@ -8,3 +8,5 @@ iterative-stratification
 scikit-learn
 mistralai
 mistral-common
+ipython
+matplotlib

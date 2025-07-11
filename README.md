@@ -28,6 +28,7 @@ The system classifies patents into the 48 most common CPC class codes, which are
 ├── eval.py                  # Script for evaluation metrics calculation
 ├── finetuning.ipynb        # Fine-tuning notebook
 ├── preprocess_data.ipynb   # Data preprocessing notebook
+├── patent_classifier_ui.py # Interactive patent classification UI
 └── requirements.txt        # Python dependencies
 ```
 
@@ -47,9 +48,16 @@ export MISTRAL="your-api-key-here"
 export WANDB_API_KEY="your-api-key-here"
 ```
 
-## Usage
+## Interactive Patent Classification UI
 
-### Data Preprocessing
+The `patent_classifier_ui.py` provides a user-friendly Streamlit interface for classifying patent descriptions into CPC codes.
+
+```bash
+# Run the UI
+streamlit run patent_classifier_ui.py
+```
+
+## Data Preprocessing
 
 The `preprocess_data.ipynb` notebook contains the complete data pipeline for preparing patent classification datasets. It shows how raw patent data was fetched, cleaned, and preprocessed into training-ready formats.
 
@@ -60,7 +68,7 @@ The `preprocess_data.ipynb` notebook contains the complete data pipeline for pre
 - Dataset splitting (train/validation/test)
 - Format conversion for fine-tuning
 
-### Fine-tuning
+## Fine-tuning
 
 Use `finetuning.ipynb` to fine-tune Mistral models via the Mistral fine-tuning API to improve classification performance beyond prompt-based approaches.
 
@@ -71,7 +79,7 @@ Use `finetuning.ipynb` to fine-tune Mistral models via the Mistral fine-tuning A
 - Integration with Weights & Biases for experiment tracking
 - Inference with fine-tuned model
 
-### Batch Inference with Base Models
+## Batch Inference with Base Models
 
 The `batch_inference.py` script runs inference on datasets using Mistral's batch API for **base models only** (not fine-tuned models). It enables efficient baseline testing of base models and processes multiple samples simultaneously instead of sample-by-sample classification. It can process either raw patent data or pre-processed batch inference files.
 
@@ -95,7 +103,7 @@ python batch_inference.py -p data/batchinf_test_data.jsonl -m ministral-3b-lates
 python batch_inference.py -i data/raw_test_data.jsonl -s custom_sys.md -u custom_user.md -m ministral-3b-latest
 ```
 
-### Evaluation
+## Evaluation
 
 The `eval.py` script calculates comprehensive multi-label classification metrics to assess model performance on patent classification. It evaluates model predictions against ground truth labels and generates detailed performance metrics, including identification of     weak-performing classes.
 
@@ -130,8 +138,6 @@ python eval.py -r results/batchinf_results.jsonl -m ministral-8b-latest -f "epoc
 
 ### Results Visualization
 
-Use the `viz_results.ipynb` notebook to visualize and compare model performance across different experiments.
-
-**Usage**: Open `viz_results.ipynb` in Jupyter and run all cells after populating `metrics.csv` with evaluation results.
+Use the `viz_results.ipynb` notebook to visualize and compare model performance across different experiments. Open `viz_results.ipynb` in Jupyter and run all cells after populating `metrics.csv` with evaluation results.
 
 

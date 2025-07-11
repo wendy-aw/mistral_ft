@@ -10,3 +10,4 @@ mistralai
 mistral-common
 ipython
 matplotlib
+streamlit

@@ -117,7 +117,28 @@ def extract_pred_ids(
 ) -> list[list[str]]:
     def extract_id_list(data: dict) -> list[str]:
         if "response" in data:
-            return data["response"]["body"]["choices"][0]["message"]["content"].strip()
+            content = data["response"]["body"]["choices"][0]["message"]["content"].strip()
+            # Remove backticks if present
+            content = content.replace("```json\n", "").replace("\n```", "")
+            
+            # Helper function to extract from parsed content
+            def extract_from_parsed(parsed_content):
+                if isinstance(parsed_content, dict) and "pred_class_ids" in parsed_content:
+                    return parsed_content["pred_class_ids"]
+                return parsed_content
+            
+            # Try to parse JSON
+            try:
+                return extract_from_parsed(json.loads(content))
+            except json.JSONDecodeError:
+                # If ends with comma, replace with close bracket and retry
+                if content.endswith(","):
+                    content = content[:-1] + "]"
+                try:
+                    return extract_from_parsed(json.loads(content))
+                except json.JSONDecodeError:
+                    print("Invalid JSON:", content)
+                    return []
         elif "pred_class_ids" in data:
             return data["pred_class_ids"]
         else:
@@ -131,20 +152,6 @@ def extract_pred_ids(
             data = json.loads(line)
             custom_id = int(data["custom_id"])
             id_list = extract_id_list(data)
-            # Replace backticks with empty string
-            id_list = id_list.replace("```json\n", "")
-            id_list = id_list.replace("\n```", "")
-            try:
-                id_list = json.loads(id_list)
-            except json.JSONDecodeError:
-                # If ends with comma, replace with close bracket and retry
-                if id_list.endswith(","):
-                    id_list = id_list[:-1] + "]"
-                try:
-                    id_list = json.loads(id_list)
-                except json.JSONDecodeError:
-                    print("Invalid JSON:", id_list)
-                    id_list = []
             try:
                 pred_ids_list[custom_id] = (
                     id_list  # Because custom_id in results file is not in order

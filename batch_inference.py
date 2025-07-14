@@ -98,11 +98,11 @@ def _validate_processed_input_file(file_path: str) -> None:
 def set_default_prompts(args: argparse.Namespace) -> None:
     """Set default prompt files if not provided."""
     if not args.sys_prompt:
-        args.sys_prompt = "prompts/sys_prompt.md"
+        args.sys_prompt = "prompts/sys_prompt_zero.md"
         print(f"Using default system prompt: {args.sys_prompt}")
 
     if not args.user_prompt:
-        args.user_prompt = "prompts/user_prompt.md"
+        args.user_prompt = "prompts/user_prompt_zero.md"
         print(f"Using default user prompt: {args.user_prompt}")
 
 
@@ -139,11 +139,15 @@ def process_raw_input(raw_input_file: str, sys_prompt: str, user_prompt: str) ->
         desc="Preparing batch inference data",
     ):
         patent_description = row["patent_desc_trunc"]
+        if "reasoning" in user_prompt:
+            max_tokens = 1000
+        else:
+            max_tokens = 100
 
         data = {
             "custom_id": str(i),
             "body": {
-                "max_tokens": 100,
+                "max_tokens": max_tokens,
                 "messages": [
                     {
                         "role": "system",

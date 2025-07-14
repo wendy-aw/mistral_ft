@@ -1,5 +1,6 @@
 # Data folder
-data/
+data/*
+!data/raw_test_data.jsonl
 g_detail_desc_text_2024_fixed.tsv
 
 # Results folder

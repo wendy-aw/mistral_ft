@@ -117,11 +117,22 @@ def load_prompts(sys_prompt_path: str, user_prompt_path: str) -> Tuple[str, str]
     return sys_prompt, user_prompt
 
 
-def process_raw_input(raw_input_file: str, sys_prompt: str, user_prompt: str) -> str:
+def process_raw_input(raw_input_file: str, sys_prompt: str, user_prompt: str, sys_prompt_path: str) -> str:
     """Process raw input file into batch inference format."""
-    inference_file_name = (
-        f"data/batchinf_{raw_input_file.split('/')[-1].split('.')[0]}.jsonl"
-    )
+    # Extract base filename
+    base_filename = raw_input_file.split('/')[-1].split('.')[0]
+    
+    # Check for special prompt types in sys_prompt filename and modify filename accordingly
+    filename_suffix = ""
+    sys_prompt_filename = sys_prompt_path.lower()
+    if "cot" in sys_prompt_filename and "fewshot" in sys_prompt_filename:
+        filename_suffix = "_fewshot_cot"
+    elif "cot" in sys_prompt_filename:
+        filename_suffix = "_cot"
+    elif "fewshot" in sys_prompt_filename:
+        filename_suffix = "_fewshot"
+    
+    inference_file_name = f"data/batchinf_{base_filename}{filename_suffix}.jsonl"
 
     # Load raw data
     test_lines: List[Dict[str, Any]] = []
@@ -235,7 +246,7 @@ def main():
     if args.raw_input_file:
         sys_prompt, user_prompt = load_prompts(args.sys_prompt, args.user_prompt)
         inference_file_name = process_raw_input(
-            args.raw_input_file, sys_prompt, user_prompt
+            args.raw_input_file, sys_prompt, user_prompt, args.sys_prompt
         )
     else:
         inference_file_name = args.processed_input_file

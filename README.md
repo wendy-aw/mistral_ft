@@ -2,6 +2,8 @@
 
 A machine learning project for fine-tuning Mistral models to classify patents using Cooperative Patent Classification (CPC) codes.
 
+Link to presentation: [presentation](https://docs.google.com/presentation/d/1BcU-9KFheY6PNxzbUjubFserr5G1Kl--sah8C26cewU/edit?usp=sharing)
+
 ## Overview
 
 This project fine-tunes Mistral models for multilabel classification, automatically assigning patent applications to relevant CPC class-level codes. The system analyzes the patent text and predicts all appropriate classification codes reflecting the invention’s technical content.

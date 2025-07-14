@@ -73,13 +73,13 @@ Analyze the patent description carefully. **Think step by step**:
 3. Justify briefly why these CPC classes are relevant to the patent's core subject matter.
 
 After reasoning through this analysis, **output the entire result as a single JSON dictionary with exactly two keys**:
-- `"reasoning"`: a string containing your full step-by-step analysis.
-- `"class_ids"`: an array containing only the final selected CPC class IDs.
+- `"reasoning"`: a string containing your concise step-by-step analysis.
+- `"pred_class_ids"`: an array containing only the final selected CPC class IDs.
 
 Example output format:
 {{
-  "reasoning": "<your step-by-step explanation here>",
-  "class_ids": ["Y02", "H01"]
+  "reasoning": "<your concise step-by-step explanation here>",
+  "pred_class_ids": ["Y02", "H01"]
 }}
 
 Do not include any other text or formatting outside this JSON dictionary. Ensure the output is valid JSON.

@@ -17,6 +17,6 @@ Instructions:
 
 When producing your output:
 - Present your entire output as a valid JSON dictionary with two keys:
-  - `"reasoning"`: containing your step-by-step explanation.
-  - `"class_ids"`: containing the list of selected CPC class IDs (e.g., `["Y02", "H01"]`).
+  - `"reasoning"`: containing your concise step-by-step explanation.
+  - `"pred_class_ids"`: containing the list of selected CPC class IDs (e.g., `["Y02", "H01"]`).
 - Do not include any additional text or formatting outside this JSON dictionary.

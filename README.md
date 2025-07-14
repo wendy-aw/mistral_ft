@@ -88,8 +88,8 @@ The `batch_inference.py` script runs inference on datasets using Mistral's batch
 - `--raw_input_file, -i`: Path to raw input JSONL file containing `patent_desc_trunc` field
 - `--processed_input_file, -p`: Path to pre-processed JSONL file with `custom_id` and `body` fields
 - `--results_file, -r`: Output path for results (default: `results/batchinf_results.jsonl`)
-- `--sys_prompt, -s`: System prompt file for processing raw input file (default: `prompts/sys_prompt.md`)
-- `--user_prompt, -u`: User prompt file for processing raw input file (default: `prompts/user_prompt.md`)
+- `--sys_prompt, -s`: System prompt file for processing raw input file (default: `prompts/sys_prompt_zero.md`)
+- `--user_prompt, -u`: User prompt file for processing raw input file (default: `prompts/user_prompt_zero.md`)
 - `--model, -m`: Mistral model name (required)
 
 **Examples**:

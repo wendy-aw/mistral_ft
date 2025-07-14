@@ -166,8 +166,8 @@ def classify_patent_text(client: Mistral, model_name: str, patent_text: str) -> 
             return class_ids
         else:
             # Use chat completion with prompts for base models
-            sys_prompt = open("prompts/sys_prompt.md", "r").read()
-            user_prompt = open("prompts/user_prompt.md", "r").read()
+            sys_prompt = open("prompts/sys_prompt_zero.md", "r").read()
+            user_prompt = open("prompts/user_prompt_zero.md", "r").read()
 
             response = client.chat.complete(
                 model=model_name,

@@ -140,6 +140,8 @@ def extract_pred_ids(
                     print("Invalid JSON:", content)
                     return []
         elif "pred_class_ids" in data:
+            # convert string to list
+            data["pred_class_ids"] = json.loads(data["pred_class_ids"])
             return data["pred_class_ids"]
         else:
             raise ValueError(
@@ -173,7 +175,7 @@ if __name__ == "__main__":
         "--test_data",
         "-t",
         type=str,
-        default="data/df_test_final.jsonl",
+        default="data/raw_test_data.jsonl",
         help="Path to JSONL test data with cpc_class_ids field",
     )
     parser.add_argument(
@@ -209,7 +211,7 @@ if __name__ == "__main__":
                 "Results file must have the same number of entries as test data"
             )
 
-    # Get true ids list from data/df_test_final.jsonl
+    # Get true ids list from data/raw_test_data.jsonl
     true_ids_list = []
     with open(args.test_data, "r") as f:
         for line in f:

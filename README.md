@@ -121,7 +121,7 @@ The `eval.py` script calculates comprehensive multi-label classification metrics
 **Arguments**:
 - `--model, -m`: Model name for tracking (default: `ministral-3b-2410`)
 - `--results, -r`: Path to inference results JSONL file (required). Must have `custom_id` and `pred_class_ids` or `response` fields 
-- `--test_data, -t`: Path to test data JSONL file with ground truth. Must have `cpc_class_ids` field (default: `data/df_test_final.jsonl`)
+- `--test_data, -t`: Path to test data JSONL file with ground truth. Must have `cpc_class_ids` field (default: `data/raw_test_data.jsonl`)
 - `--ft_notes, -f`: Notes about fine-tuning settings (optional)
 - `--data_notes, -d`: Notes about train dataset (optional)
 

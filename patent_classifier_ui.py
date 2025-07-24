@@ -143,9 +143,9 @@ def classify_patent_text(client: Mistral, model_name: str, patent_text: str) -> 
         List of predicted CPC class IDs
     """
     try:
+        top_scores = {}
         # Process patent text first
         processed_text = process_description(patent_text)
-
         # Check if it's a fine-tuned model
         if model_name.startswith("ft:"):
             # Use classifier API for fine-tuned models
@@ -162,8 +162,15 @@ def classify_patent_text(client: Mistral, model_name: str, patent_text: str) -> 
                 classification = result["results"][0]
                 if "cpc_class_ids" in classification:
                     scores = classification["cpc_class_ids"]["scores"]
-                    class_ids.extend([k for k, v in scores.items() if v > 0.05])
-            return class_ids
+                    for k, v in scores.items():
+                        if v > 0.05:
+                            class_ids.append(k)
+                            top_scores[k] = v
+            # order top_scores by decreasing value
+            top_scores = dict(
+                sorted(top_scores.items(), key=lambda item: item[1], reverse=True)
+            )
+            return class_ids, top_scores
         else:
             # Use chat completion with prompts for base models
             sys_prompt = open("prompts/sys_prompt_zero.md", "r").read()
@@ -192,10 +199,10 @@ def classify_patent_text(client: Mistral, model_name: str, patent_text: str) -> 
 
             # Convert response to JSON array
             try:
-                return json.loads(response_content)
+                return json.loads(response_content), {}
             except json.JSONDecodeError:
                 st.warning(f"Invalid JSON response: {response_content}")
-                return []
+                return [], {}
 
     except Exception as e:
         st.error(f"Error during classification: {str(e)}")
@@ -287,7 +294,7 @@ def main():
             st.error("Please enter a patent description before classifying.")
         else:
             with st.spinner("Classifying patent text..."):
-                classification_result = classify_patent_text(
+                classification_result, scores = classify_patent_text(
                     client, model_name, patent_text.strip()
                 )
 
@@ -316,6 +323,8 @@ def main():
                         # Show raw response (collapsible)
                         with st.expander("Raw Classification Response"):
                             st.json(classification_result)
+                            if scores:
+                                st.json(scores)
                     else:
                         st.warning("No classification results found.")
                 else:
